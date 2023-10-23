@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <title>FLIG - Member</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style_member.css') }}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+  <style>
+    /* Paleta de Cores */
+    :root {
+      --primary-color: #1f2029;
+      --secondary-color: #23252f;
+      --light-gray: #272934;
+      --medium-gray: #2b2d3e;
+      --dark-gray: #2f3143;
+      --text-color: #ffeba7;
+    }
+    
+    /* Estilos CSS gerais */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1f2029;
+      padding: 0;
+      color: #ffeba7;
+      margin: 0;
+      transition: background-color 0.3s;
+      position: relative;
+    }
+    
+    .header {
+      background-color: #23252f;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .sidebar {
+      background-color: #272934;
+      padding: 20px;
+      width: 198px;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      transition: width 0.3s;
+    }
+
+    .sidebar.collapsed {
+      width: 60px;
+    }
+
+    .sidebar ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar li {
+      margin-bottom: 10px;
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: #ffeba7;
+      display: block;
+      transition: opacity 0.3s;
+    }
+
+    .sidebar.collapsed a {
+      opacity: 0;
+    }
+    
+    /* Estilos CSS para a tela de membros e gráfico de produtividade */
+    .members {
+      margin-top: 100px;
+      margin-left: 20%;
+      width: 60%;
+    }
+
+    .member-header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: var(--text-color);
+    }
+
+    .member-form {
+      background-color: var(--dark-gray);
+      padding: 20px;
+    }
+
+    .member-form input[type="text"],
+    .member-form input[type="submit"] {
+      margin-bottom: 10px;
+      width: 100%;
+      padding: 8px;
+      border: none;
+      background-color: var(--medium-gray);
+      color: var(--text-color);
+    }
+
+    .member-list {
+      background-color: var(--medium-gray);
+      padding: 10px;
+      margin-top: 20px;
+    }
+
+    .member-item {
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: var(--dark-gray);
+      color: var(--text-color);
+    }
+
+    .member-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .member-productivity {
+      color: var(--light-gray);
+    }
+
+    .productivity-chart {
+      margin-top: 20px;
+      background-color: var(--dark-gray);
+      padding: 10px;
+      height: 200px;
+    }
+
+    .profile {
+      position: fixed;
+      margin-top: -37px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      align-content: flex-end;
+    }
+
+    .profile-icon {
+      font-size: 20px;
+      margin-right: 5px;
+    }
+
+    .profile-name {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .profile-email {
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .perfil{
+      color:#ffeba7;
+    }
+
+    .logout{
+      color:   #ffeba7;
+      padding-left: 20px;
+      align-content: end;
+    }
+
+    
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 class="header-title">Membros</h1>
+
+    <div class="profile">
+      <div class="profile-icon"><i class="glyphicon glyphicon-user"></i></div>
+      <div class="profile-info">
+        <!-- Usar as propriedades do objeto 'user' para exibir as informações do usuário -->
+      <div class="profile-name"><a class="perfil" href="perfil">{{ user.nome }}</a></div>
+      <div class="profile-email"><a class="perfil" href="perfil">{{ user.email }}</a></div>
+      </div>
+      <i class="material-icons"><a class="logout" href="logout">logout</a></i>
+    </div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-icon" onclick="toggleSidebar()">
+      <i class="bi bi-layout-sidebar-inset"></i>
+    </div>
+    <ul>
+      <li><a href="{{ url_for('home') }}"><i class="bi bi-house-door"></i><span class="text"> Home</span></a></li>
+        <li><a href="{{ url_for('kanban') }}"><i class="bi bi-people"></i><span class="text"> Kanban</span></a></li>
+        <li><a href="{{ url_for('backlog') }}"><i class="bi bi-columns-gap"></i><span class="text"> Backlog</span></a></li>
+        <li><a href="{{ url_for('interative') }}"><i class="bi bi-kanban"></i><span class="text"> Quadros</span></a></li>
+    </ul>
+  </div>
+
+  <div class="members">
+    <div class="member-header">
+      Adicionar Membros
+    </div>
+    <div class="member-form">
+      <input type="text" id="memberName" placeholder="Nome do Membro">
+      <input type="submit" value="Adicionar" onclick="adicionarMembro()">
+    </div>
+
+    <div class="member-list">
+      <div class="member-header">
+        Membros
+      </div>
+      <div id="memberList"></div>
+    </div>
+
+    <div class="productivity-chart">
+      <div class="member-header">
+        Gráfico de Produtividade
+      </div>
+      <canvas id="productivityChart"></canvas>
+    </div>
+  </div>
+
+</body>
+<script>
+  // Função para alternar a barra lateral
+  function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var board = document.querySelector('.board');
+    var sidebarIcon = document.querySelector('.sidebar-icon');
+    var sidebarIcons = document.querySelectorAll('.sidebar i'); // Seleciona todos os ícones da barra lateral
+    var textElements = document.querySelectorAll('.text');
+
+    if (sidebar.style.width === '200px') {
+        sidebar.style.width = '60px'; // Largura contraída da sidebar
+        board.style.marginLeft = '70px'; // Margem esquerda do board para acomodar a sidebar contraída
+        sidebarIcon.innerHTML = '<i class="bi bi-layout-sidebar-inset-reverse"></i>'; // Ícone para expandir a sidebar
+
+        // Reduz o tamanho dos ícones para 30px quando a barra lateral está contraída
+        sidebarIcons.forEach(function (icon) {
+            icon.style.fontSize = '30px';
+        });
+        textElements.forEach(function (text) {
+            text.style.display = 'none';
+        });
+
+    } else {
+        sidebar.style.width = '200px'; // Largura expandida da sidebar
+        board.style.marginLeft = '200px'; // Margem esquerda do board para acomodar a sidebar expandida
+        sidebarIcon.innerHTML = '<i class="bi bi-layout-sidebar-inset"></i>'; // Ícone para contrair a sidebar
+
+        // Restaura o tamanho original dos ícones quando a barra lateral está expandida
+        sidebarIcons.forEach(function (icon) {
+            icon.style.fontSize = '20px';
+        });
+        textElements.forEach(function (text) {
+            text.style.display = 'inline-block';
+        });
+
+    }
+  }
+
+    let memberList = document.getElementById('memberList');
+
+    function adicionarMembro() {
+      let memberName = document.getElementById('memberName').value;
+
+      if (memberName) {
+        let memberItem = document.createElement('div');
+        memberItem.className = 'member-item';
+
+        let memberNameElement = document.createElement('div');
+        memberNameElement.className = 'member-name';
+        memberNameElement.textContent = memberName;
+
+        let memberProductivityElement = document.createElement('div');
+        memberProductivityElement.className = 'member-productivity';
+        memberProductivityElement.textContent = 'Produtividade: 80%';
+
+        memberItem.appendChild(memberNameElement);
+        memberItem.appendChild(memberProductivityElement);
+
+        memberList.appendChild(memberItem);
+
+        document.getElementById('memberName').value = '';
+      }
+    }
+
+    function logout() {
+      alert("Logout realizado com sucesso!");
+    }
+</script>
+</html>

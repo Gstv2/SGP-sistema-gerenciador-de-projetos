@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webleb</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+  integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_contato.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+</head>
+<body>
+  <section>
+    <div class="container flow-content">
+      <h2 class="section-title">Team develops</h2>
+      <ul role="list" class="grid">
+        <li>
+          <article class="card" data-visible="false">
+            <div class="card__front flow-content">
+              <img class="card__img mx-auto" src="{{ url_for('static', filename='gustavo.png') }}"/>
+              <div class="flow-content" data-spacing="sm">
+                <p class="card__name">Gustavo Nery</p>
+                <p class="card__position">Software Engineer</p>
+              </div>
+            </div>
+            <div class="card__back flow-content">
+              <p class="card__name">Gustavo Nery</p>
+              <q>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et dictum sem.</q>
+              <ul role="list" class="card__social flex-group">
+                <li>
+                  <a href="#">
+                    <i class="fa-brands fa-twitter "></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i class="fa-brands fa-linkedin "></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <footer class="card__footer">
+              <button data-card-controller class="card__toggle">
+                <i class="fa-solid fa-plus card__toggle-icon"></i>
+              </button>
+            </footer>
+          </article>
+        </li>
+        <li>
+          <article class="card" data-visible="false">
+            <div class="card__front flow-content">
+              <img class="card__img mx-auto" src="{{ url_for('static', filename='josian.png') }}" />
+              <div class="flow-content" data-spacing="sm">
+                <p class="card__name">Antonio josian</p>
+                <p class="card__position">Graphic Designer</p>
+              </div>
+            </div>
+            <div class="card__back flow-content">
+              <p class="card__name">Antonio josian</p>
+              <q>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et dictum sem.</q>
+              <ul role="list" class="card__social flex-group">
+                <li>
+                  <a href="#">
+                    <i class="fa-brands fa-twitter"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i class="fa-brands fa-linkedin"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <footer class="card__footer">
+              <button data-card-controller class="card__toggle">
+                <i class="fa-solid fa-plus card__toggle-icon"></i>
+              </button>
+            </footer>
+          </article>
+        </li>
+        <li>
+          <article class="card" data-visible="false">
+            <div class="card__front flow-content">
+              <img class="card__img mx-auto" src="{{ url_for('static', filename='renan.png') }}"/>
+              <div class="flow-content" data-spacing="sm">
+                <p class="card__name">Renan Jucá</p>
+                <p class="card__position">Junior Developer</p>
+              </div>
+            </div>
+            <div class="card__back flow-content">
+              <p class="card__name">Renan Jucá</p>
+              <q>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et dictum sem.</q>
+              <ul role="list" class="card__social flex-group">
+                <li>
+                  <a href="#">
+                    <i class="fa-brands fa-twitter"></i>
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <i class="fa-brands fa-linkedin "></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <footer class="card__footer">
+              <button data-card-controller class="card__toggle">
+                <i class="fa-solid fa-plus card__toggle-icon"></i>
+              </button>
+            </footer>
+          </article>
+        </li>   
+      </ul>
+    </div>
+  </section>
+  <script >
+    const cardControllers = document.querySelectorAll("[data-card-controller]");
+    cardControllers.forEach(controller => {
+    controller.addEventListener("click", (e) => {
+        const card = e.currentTarget.parentElement.parentElement;
+        const isVisible = card.dataset.visible;
+
+        if (isVisible === "false") {
+        card.setAttribute("data-visible", true);
+        } else {
+        card.setAttribute("data-visible", false);
+        }
+    })
+    })
+  </script>
+</body>
+</html>

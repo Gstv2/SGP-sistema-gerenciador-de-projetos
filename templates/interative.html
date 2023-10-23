@@ -1,0 +1,199 @@
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Gerenciamento de Tarefas</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style_interative.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    </head>
+    <body>
+        <div class="task-manager">
+            <!-- Início da barra lateral esquerda -->
+            <div class="left-bar">
+                <div class="upper-part">
+                    <h2>FLIG</h2>
+                </div>
+                <!-- Conteúdo da barra lateral esquerda -->
+                <div class="left-content">
+                    <ul class="actions-list">
+                        <!-- Ítens da lista de ações -->
+                        <li class="item">
+                            <a href="home"><span>Home</span></a>
+                        </li>
+
+                        <li class="item">
+                            <a href="#"><span>Quadros</span></a>
+                        </li>
+
+                        <li class="item">
+                            <a href="contato"><span>Contato</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Fim da barra lateral esquerda -->
+
+            <!-- Conteúdo da página -->
+            <div class="page-content">
+                <div class="header">Área de Trabalho</div>
+                <!-- Início das categorias de conteúdo -->
+                <div class="content-categories">
+                    <div class="label-wrapper">
+                        <input type="radio" name="nav" id="opt-1" class="nav-item">
+                        <label class="category" for="opt-1">All</label>
+                    </div>
+
+                    <div class="label-wrapper">
+                        <input type="radio" name="nav" id="opt-2" class="nav-item">
+                        <label class="category" for="opt-2">Important</label>
+                    </div>
+
+                    <div class="label-wrapper">
+                        <input type="radio" name="nav" id="opt-3" class="nav-item">
+                        <label class="category" for="opt-3">Notes</label>
+                    </div>
+
+                    <div class="label-wrapper">
+                        <input type="radio" name="nav" id="opt-4" class="nav-item">
+                        <label class="category" for="opt-4">Links</label>
+                    </div>
+                </div>
+                <!-- Fim das categorias de conteúdo -->
+
+                <!-- Contêiner das tarefas -->
+                <div class="tasks-wrapper">
+                    <!-- Conteúdo da coluna da direita -->
+                    <div class="right-content">
+                        <!-- Caixa de tarefa amarela -->
+                        <!-- Seção de quadros -->
+                        <div class="boards-section">
+                            <h2>Meus Quadros</h2><button class="add-board-button" id onclick="adicionarKanban()">Adicionar Quadro</button>
+                            
+                            <div class="boards-list">
+                                <!-- Loop pelos quadros do usuário -->
+                                {% for kanban in telas %}
+                                <div class="board-card" id="{{ kanban.id }}" onclick="redirectToKanban('{{ kanban.id }}')">
+                                    <h3 class="card-title">{{ kanban.name }}</h3>
+                                    <p class="card-description">{{ kanban.description }}</p>
+                                    <button class="board-button" data-kanban-id="{{ kanban.id }}" onclick="deletarkanban(this)">Deletar Quadro</button>
+                                    <button class="board-button" data-kanban-id="{{ kanban.id }}" onclick="editCard(this)">editar Quadro</button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fim do conteúdo da coluna da direita -->
+                </div>
+                <!-- Fim do contêiner das tarefas -->
+            </div>
+            <!-- Fim do conteúdo da página -->
+        </div>
+    </body>
+    <script>
+        // Função para adicionar um novo quadro
+        function adicionarKanban() {
+            let cardTitle = prompt("Digite o título do Quadro:");
+            let cardDescription = prompt("Digite a descrição do Quadro:");
+
+            if (cardTitle && cardDescription) {
+                // Crie uma nova tarefa no front-end
+                let cardId = Date.now();
+
+                fetch('/adicionar_kanban', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: cardTitle,
+                        description: cardDescription
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Recarregue a página após adicionar o quadro
+                        location.reload();
+                    } else {
+                        alert("Erro ao adicionar o quadro.");
+                    }
+                });
+            }
+        }
+
+        // Função para deletar um quadro
+        function deletarkanban(button) {
+            let card = button.parentNode;
+            let kanban_id = button.getAttribute('data-kanban-id'); // Obtenha o ID da tarefa
+        
+            // Faça uma solicitação AJAX para deletar o quadro do servidor
+            fetch('/remover_kanban/' + kanban_id , {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Recarregue a página após deletar o quadro
+                    location.reload();
+                } else {
+                    alert("Erro ao deletar o quadro.");
+                }
+            });
+            
+        }
+        function editCard(button) {
+            // Obtém o ID da tarefa associado ao botão clicado
+            let kanban_id = button.getAttribute('data-kanban-id');
+            console.log('tomanocu')
+
+            // Obtém os dados atuais da tarefa (título e descrição) do cartão
+            let kanbanboard = document.getElementById(kanban_id);
+            let currentTitle = kanbanboard.querySelector('.card-title').textContent;
+            let currentDescription = kanbanboard.querySelector('.card-description').textContent;
+            console.log("priquito")
+
+            // Pede ao usuário que insira os novos valores para o título e descrição
+            let newname = prompt("Digite o novo título da tarefa:", currentTitle);
+            let newDescription = prompt("Digite a nova descrição da tarefa:", currentDescription);
+
+            // Verifica se o usuário inseriu novos valores e se o botão Cancelar não foi pressionado
+            if (newname !== null && newDescription !== null) {
+                // Atualiza os dados no cartão
+                kanbanboard.querySelector('.card-title').textContent = newname;
+                kanbanboard.querySelector('.card-description').textContent = newDescription;
+
+                // Faça uma solicitação AJAX para atualizar os dados no servidor
+                fetch(`/edit_kanban/${kanban_id}`, {
+                    method: 'PUT',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        newname: newname,
+                        newDescription: newDescription
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                    // A tarefa foi atualizada com sucesso no servidor
+                    alert("Quadro atualizado com sucesso!");
+                    } else {
+                    // Ocorreu um erro ao atualizar a tarefa no servidor
+                    alert("Erro ao atualizar o quadro.");
+                    }
+                });
+            }
+        }
+        function redirectToKanban(kanban_id) {
+            // Redireciona para a tela Kanban específica com o kanban_id
+            window.location.href = `/kanban${kanban_id}`;
+        }
+
+    </script>
+    </html>

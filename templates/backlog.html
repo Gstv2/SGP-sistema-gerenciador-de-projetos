@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style_backlog.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+
+</head>
+<body>
+  <div class="header">
+    <h1 class="header-title">Backlog</h1>
+
+    <div class="profile">
+      <div class="profile-icon"><i class="glyphicon glyphicon-user"></i></div>
+      <div class="profile-info">
+        <!-- Usar as propriedades do objeto 'user' para exibir as informações do usuário -->
+      <div class="profile-name"><a class="perfil" href="perfil">{{ user.nome }}</a></div>
+      <div class="profile-email"><a class="perfil" href="perfil">{{ user.email }}</a></div>
+      </div>
+      <i class="material-icons"><a class="logout" href="logout">logout</a></i>
+    </div>
+  </div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-icon" onclick="toggleSidebar()">
+      <i class="bi bi-layout-sidebar-inset"></i>
+    </div>
+    <ul>
+      <li><a href="{{ url_for('home') }}"><i class="bi bi-house-door"></i><span class="text">Home</span></a></li>
+      <li><a href="{{ url_for('kanban') }}"><i class="bi bi-columns-gap"></i><span class="text">Kanban</span></a></li>
+      <li><a href="{{ url_for('member') }}"><i class="bi bi-people"></i><span class="text">Membros</span></a></li>
+      <li><a href="{{ url_for('interative') }}"><i class="bi bi-kanban"></i><span class="text">Quadros</span></a></li>
+    </ul>
+  </div>
+    
+  <div class="backlog">
+    <div class="backlog-header">
+      Backlog
+    </div>
+    <table class="backlog-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Descrição</th>
+          <th>Data</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="backlogTableBody"></tbody>
+    </table>
+    <div class="backlog-actions">
+      <input type="text" id="backlogTitle" placeholder="Título">
+      <input type="text" id="backlogDescription" placeholder="Descrição">
+      <input type="date" id="backlogDate" placeholder="Data">
+      <input type="button" value="Adicionar" onclick="adicionarTarefaBacklog()">
+    </div>
+  </div>
+    
+</body>
+<script>
+  // Função para alternar a barra lateral
+  function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var board = document.querySelector('.board');
+    var sidebarIcon = document.querySelector('.sidebar-icon');
+    var sidebarIcons = document.querySelectorAll('.sidebar i'); // Seleciona todos os ícones da barra lateral
+    var textElements = document.querySelectorAll('.text');
+
+    if (sidebar.style.width === '200px') {
+        sidebar.style.width = '60px'; // Largura contraída da sidebar
+        board.style.marginLeft = '70px'; // Margem esquerda do board para acomodar a sidebar contraída
+        sidebarIcon.innerHTML = '<i class="bi bi-layout-sidebar-inset-reverse"></i>'; // Ícone para expandir a sidebar
+
+        // Reduz o tamanho dos ícones para 30px quando a barra lateral está contraída
+        sidebarIcons.forEach(function (icon) {
+            icon.style.fontSize = '30px';
+        });
+        textElements.forEach(function (text) {
+            text.style.display = 'none';
+        });
+
+    } else {
+        sidebar.style.width = '200px'; // Largura expandida da sidebar
+        board.style.marginLeft = '200px'; // Margem esquerda do board para acomodar a sidebar expandida
+        sidebarIcon.innerHTML = '<i class="bi bi-layout-sidebar-inset"></i>'; // Ícone para contrair a sidebar
+
+        // Restaura o tamanho original dos ícones quando a barra lateral está expandida
+        sidebarIcons.forEach(function (icon) {
+            icon.style.fontSize = '20px';
+        });
+        textElements.forEach(function (text) {
+            text.style.display = 'inline-block';
+        });
+
+    }
+  }
+
+  let backlogTableBody = document.getElementById('backlogTableBody');
+
+  function adicionarTarefaBacklog() {
+    let backlogTitle = document.getElementById('backlogTitle').value;
+    let backlogDate = document.getElementById('backlogDate').value;
+    let backlogDescription = document.getElementById('backlogDescription').value;
+
+    if (backlogTitle && backlogDescription && backlogDate) {
+      let row = document.createElement('tr');
+
+      let titleCell = document.createElement('td');
+      titleCell.textContent = backlogTitle;
+
+      let descriptionCell = document.createElement('td');
+      descriptionCell.textContent = backlogDescription;
+
+      let dateCell = document.createElement('td');
+      dateCell.textContent = backlogDate;
+
+      let actionsCell = document.createElement('td');
+      let removeButton = document.createElement('button');
+      removeButton.textContent = 'Remover';
+      removeButton.className = 'card-button';
+      removeButton.onclick = function () {
+        removerTarefaBacklog(this);
+      };
+      actionsCell.appendChild(removeButton);
+
+      row.appendChild(titleCell);
+      row.appendChild(descriptionCell);
+      row.appendChild(dateCell);
+      row.appendChild(actionsCell);
+
+      backlogTableBody.appendChild(row);
+
+      document.getElementById('backlogTitle').value = '';
+      document.getElementById('backlogDescription').value = '';
+      document.getElementById('backlogDate').value = '';
+    }
+  }
+
+  function removerTarefaBacklog(button) {
+    let row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+  }
+
+  function logout() {
+    alert("Logout realizado com sucesso!");
+  }
+
+</script>
+</html>

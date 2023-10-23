@@ -1,0 +1,210 @@
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #1f2029;
+  padding: 0;
+  color: #ffeba7;
+  margin: 0;
+  transition: background-color 0.3s;
+  position: relative;
+  bottom: 20px;
+}
+
+.header {
+  background-color: #23252f;
+  padding: 30px;
+  text-align: center;
+}
+
+.header-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.sidebar {
+  background-color: #272934;
+  padding: 20px;
+  width: 200px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: width 0.3s;
+  overflow-x: hidden;
+}
+
+.sidebar-icon {
+  margin-bottom: 20px;
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  margin-bottom: 10px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #ffeba7;
+  display: block;
+  transition: opacity 0.3s;
+}
+
+.sidebar i {
+  color: #ffeba7;
+  font-size: 20px; /* Tamanho dos ícones */
+}
+
+.sidebar ul li a:hover {
+  background-color: #1f2029;
+}
+
+
+.board {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 200px;
+  margin-top: 2%;
+  padding: 20px;
+  transition: margin-left 0.3s;
+}
+
+.column {
+  flex-grow: 1;
+  padding: 10px;
+  background-color: #2b2d3e;
+  border-radius: 15px;
+  margin-right: 10px;
+  position: relative;
+}
+
+.column-header {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.card {
+  padding: 10px;
+  background-color: #373950;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  color: #ffeba7;
+  position: relative;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
+.card-description {
+  font-size: 14px;
+  margin-left: 5px;
+}
+
+.card-button {
+  padding: 5px 10px;
+  background-color: #333548;
+  color: #ffeba7;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 10px;
+  transition: background-color 0.3s;
+  position: absolute;
+  top: 40px;
+  right: 10px;
+}
+
+.card-button_edit {
+  padding: 5px 10px;
+  background-color: #333548;
+  color: #ffeba7;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: background-color 0.3s;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+#icon_pen{
+  font-size: 10pxs;
+}
+
+.card-button-adicionar {
+  padding: 5px 10px;
+  background-color: #333548;
+  color: #ffeba7;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.card-button:hover {
+  background-color: #37384c;
+}
+
+.profile {
+  position: fixed;
+  margin-top: -37px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  align-content: flex-end;
+}
+
+.profile-icon {
+  font-size: 20px;
+  margin-right: 5px;
+}
+
+.profile-name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.profile-email {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.perfil{
+  color:#ffeba7;
+}
+
+.logout{
+  color:   #ffeba7;
+  padding-left: 20px;
+  align-content: end;
+}
+
+/* Adicione isso ao seu arquivo CSS para lidar com layouts responsivos */
+/* Estilos para telas menores, como tablets e dispositivos móveis */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none; /* Ocultar a barra lateral em telas menores */
+  }
+  .board {
+    margin-left: 0; /* Aumentar a largura do quadro principal em telas menores */
+  }
+}

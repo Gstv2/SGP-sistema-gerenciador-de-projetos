@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>FLIG - Registrar</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style_register.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+</head>
+<body>
+  <div class="section">
+    <div class="container">
+      <div class="row full-height justify-content-center">
+        <div class="col-12 text-center align-self-center py-5">
+          <div class="section pb-5 pt-5 pt-sm-2 text-center">
+            {% if mensagem_erro %}
+                <div class="alert alert-danger" role="alert">
+                    {{ mensagem_erro }}
+                </div>
+            {% endif %}
+            <div class="card-3d-wrap mx-auto">
+              <h6 class="mb-0 pb-3"><span>Registrar</span></h6>
+              <div class="card-3d-wrapper">
+                <div class="card-front">
+                  <div class="center-wrap">
+                    <div class="section text-center">
+                      <form action="{{ url_for('register') }}" method="POST">
+                        <h4 class="mb-3 pb-3">Registrar</h4>
+                        <div class="form-group">
+                          <input type="text" class="form-style" placeholder="Nome" name="nome" required>
+                          <i class="input-icon uil uil-user"></i>
+                        </div>
+                        <div class="form-group mt-2">
+                          <input type="tel" class="form-style" placeholder="Telefone" maxlength="9" name="telefone" required>
+                          <i class="input-icon uil uil-phone"></i>
+                        </div>
+                        <div class="form-group mt-2">
+                          <input type="email" class="form-style" placeholder="Email" name="email" required>
+                          <i class="input-icon uil uil-at"></i>
+                        </div>
+                        <div class="form-group mt-2">
+                          <input type="password" id="pwd" class="form-style" placeholder="Senha" maxlength="8" name="senha" required>
+                          <input type="checkbox" id="chk"> mostrar senha
+                          <i class="input-icon uil uil-lock-alt"></i>
+                        </div>
+                        <button type="submit" class="btn mt-4">Registrar</button>
+                        <p class="mb-0 mt-4 text-center"><a href="{{ url_for('login') }}" class="link">ja tem login?</a></p>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+<script>
+  const pwd = document.getElementById("pwd");
+  const chk = document.getElementById("chk");
+
+  chk.onchange = function(e){
+    pwd.type = chk.checked ? "text" : "password";
+  };
+</script>
+</html>
