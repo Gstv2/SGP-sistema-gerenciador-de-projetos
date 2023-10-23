@@ -1,0 +1,181 @@
+/* Estilos para o corpo da página */
+body {
+  width: 100vw;
+  font-family: Arial, sans-serif;
+  background-color: #000; /* Cor de fundo preta */
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #fff; /* Cor do texto branca */
+}
+
+/* Estilos para o cabeçalho */
+h1 {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #333; /* Cor de fundo do cabeçalho */
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #222;
+  border-radius: 7px;
+}
+
+/* Estilos para o formulário */
+.profile-form {
+  width: 50vw;
+  max-width: 400px;
+  height: auto;
+  padding: 30px;
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.56);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid #2e2d2d;
+  align-items: center;
+  background-color: #333; /* Cor de fundo do formulário */
+  border-radius: 20px;
+  margin: 0 auto; /* Centralizando o formulário horizontalmente */
+}
+
+/* Estilos para a imagem de perfil */
+.profile-picture {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin: 20px auto;
+  overflow: hidden;
+  border: 3px solid #3498db;
+}
+
+.profile-picture img {
+  width: 100%;
+  height: auto;
+}
+
+/* Estilos para os campos de entrada */
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+/* Estilos para os botões */
+button {
+  background-color: #27ae60;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+button#edit-profile {
+  background-color: #e74c3c;
+  border-radius: 5px;
+}
+
+/* Estilo para o link de visualização de perfil */
+#view-profile-link {
+  text-decoration: none;
+  background-color: #e74c3c;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  text-align: center;
+  display: block;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+#view-profile-link:hover {
+  background-color: #c0392b;
+}
+
+#link{
+color:white;
+text-decoration: none
+}
+
+
+/* Estilos para a segunda tela */
+
+
+
+
+/* Defina uma classe para a segunda tela, por exemplo: .profile-view */
+.profile-view {
+  background-color: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.56);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Estilo para a imagem de perfil na segunda tela */
+#display-username {
+  font-size: 24px;
+  margin: 10px 0;
+  color: #3498db; /* Cor para destacar o nome de usuário */
+}
+
+/* Estilo para a descrição na segunda tela */
+#display-bio {
+  font-size: 16px;
+  color: #ccc; /* Cor para um texto mais suave */
+  margin-bottom: 20px;
+}
+
+/* Estilo para o botão de editar perfil na segunda tela */
+#edit-profile {
+  background-color: #3498db;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+#edit-profile:hover {
+  background-color: #2980b9;
+}
+
+/* Estilo para o botão de voltar na segunda tela */
+#back-to-edit {
+  background-color: #e74c3c;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+}
+
+#back-to-edit:hover {
+  background-color: #c0392b;
+}

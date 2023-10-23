@@ -1,0 +1,174 @@
+
+    
+/* Paleta de Cores */
+:root {
+    --primary-color: #1f2029;
+    --secondary-color: #23252f;
+    --light-gray: #272934;
+    --medium-gray: #2b2d3e;
+    --dark-gray: #2f3143;
+    --text-color: #ffeba7;
+}
+/* Estilos CSS gerais */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1f2029;
+    padding: 0;
+    color: var(--text-color);
+    margin: 0;
+    transition: background-color 0.3s;
+    position: relative;
+    
+}
+
+.header {
+    background-color: #23252f;
+    padding: 20px;
+    text-align: center;
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.sidebar {
+    background-color: #272934;
+    padding: 0px;
+    width: 200px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transition: width 0.3s;
+    overflow-x: hidden;
+}
+
+.sidebar-icon {
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.sidebar.collapsed {
+    width: 60px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 10px;
+    margin: 0;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+}
+
+.sidebar span{
+    margin-left: 10px;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: #ffeba7;
+    display: block;
+    transition: opacity 0.3s;
+}
+
+.sidebar i {
+    color: #ffeba7;
+    font-size: 20px; /* Tamanho dos ícones */
+}
+
+.sidebar ul li a:hover {
+    background-color: #1f2029;
+}
+
+/* Estilos CSS para a tabela de backlog */
+.backlog {
+    padding: 10px;
+    text-align: center;
+    text-decoration: bold;
+    background-color: var(--dark-gray);
+    margin-top: 20px;
+    margin-left: 210px;
+    margin-right: 210px;
+    transition: margin-left 0.3s;
+    transition: margin-right 0.3s;
+}
+
+.backlog-header {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.backlog-table {
+    border-collapse: collapse;
+    margin-left: 15%;
+    padding: 10px;
+    width: 70%;
+}
+
+.backlog-table th,
+.backlog-table td {
+    background-color: #333548;
+    border: 1px solid var(--medium-gray);
+    padding: 8px;
+}
+
+.backlog-table th {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.backlog-actions {
+    color: black;
+    margin-top: 10px;
+}
+
+.profile {
+    position: fixed;
+    margin-top: -37px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    align-content: flex-end;
+}
+
+.profile-icon {
+    font-size: 20px;
+    margin-right: 5px;
+}
+
+.profile-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.profile-email {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.perfil{
+    color:#ffeba7;
+}
+
+.logout{
+    color:   #ffeba7;
+    padding-left: 20px;
+    align-content: end;
+}
+
+/* Adicione isso ao seu arquivo CSS para lidar com layouts responsivos */
+/* Estilos para telas menores, como tablets e dispositivos móveis */
+@media (max-width: 768px) {
+    .sidebar {
+      display: none; /* Ocultar a barra lateral em telas menores */
+    }
+    .board {
+      margin-left: 0; /* Aumentar a largura do quadro principal em telas menores */
+    }
+  }
