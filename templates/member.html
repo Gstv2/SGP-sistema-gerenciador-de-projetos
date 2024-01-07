@@ -223,17 +223,20 @@
     <div class="member-header">
       Adicionar Membros
     </div>
+    <!-- Update the member form and list in the members section -->
     <div class="member-form">
       <input type="text" id="memberName" placeholder="Nome do Membro">
+      <input type="text" id="memberEmail" placeholder="Email do Membro">
       <input type="submit" value="Adicionar" onclick="adicionarMembro()">
     </div>
 
     <div class="member-list">
-      <div class="member-header">
-        Membros
+      <div class="member-header">Membros</div>
+      <div id="memberList">
+        <!-- Display existing members here -->
       </div>
-      <div id="memberList"></div>
     </div>
+
 
     <div class="productivity-chart">
       <div class="member-header">
@@ -281,29 +284,69 @@
 
   let memberList = document.getElementById('memberList');
 
+  // Update the adicionarMembro() function
   function adicionarMembro() {
     let memberName = document.getElementById('memberName').value;
+    let memberEmail = document.getElementById('memberEmail').value;
 
-    if (memberName) {
-      let memberItem = document.createElement('div');
-      memberItem.className = 'member-item';
-
-      let memberNameElement = document.createElement('div');
-      memberNameElement.className = 'member-name';
-      memberNameElement.textContent = memberName;
-
-      let memberProductivityElement = document.createElement('div');
-      memberProductivityElement.className = 'member-productivity';
-      memberProductivityElement.textContent = 'Produtividade: 80%';
-
-      memberItem.appendChild(memberNameElement);
-      memberItem.appendChild(memberProductivityElement);
-
-      memberList.appendChild(memberItem);
-
-      document.getElementById('memberName').value = '';
+    if (memberName && memberEmail) {
+      // Use fetch to send a POST request to your Flask route to add a member
+      fetch('/adicionar_membro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: memberName,
+          email: memberEmail
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Erro na solicitação: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          // Update the member list on the front end
+          updateMemberList(data.member);
+        } else {
+          alert("Erro ao adicionar o membro.");
+        }
+      })
+      .catch(error => {
+        console.error('Erro durante a solicitação:', error);
+        alert("Erro durante a solicitação. Verifique o console para mais detalhes.");
+      });
     }
   }
+
+  // Function to update the member list on the front end
+  function updateMemberList(member) {
+    let memberList = document.getElementById('memberList');
+
+    let memberItem = document.createElement('div');
+    memberItem.className = 'member-item';
+
+    let memberNameElement = document.createElement('div');
+    memberNameElement.className = 'member-name';
+    memberNameElement.textContent = member.name;
+
+    let memberProductivityElement = document.createElement('div');
+    memberProductivityElement.className = 'member-productivity';
+    memberProductivityElement.textContent = 'Produtividade: 80%';
+
+    memberItem.appendChild(memberNameElement);
+    memberItem.appendChild(memberProductivityElement);
+
+    memberList.appendChild(memberItem);
+
+    // Clear input fields
+    document.getElementById('memberName').value = '';
+    document.getElementById('memberEmail').value = '';
+  }
+
 
   function logout() {
     alert("Logout realizado com sucesso!");

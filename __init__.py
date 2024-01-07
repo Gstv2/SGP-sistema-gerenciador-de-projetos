@@ -7,6 +7,7 @@ from functools import wraps
 from models.user import Base, User
 from models.kanbanboard import Base, KanbanBoard
 from models.kanbancard import Base, KanbanCard
+from models.backlog import Base, Backlog
 from urllib.parse import quote_plus
 import os
 
@@ -222,15 +223,25 @@ def remover_kanban(kanban_id):
     try:
         # Remova o KanbanBoard existente, se houver
         kanban = db_session.query(KanbanBoard).filter_by(id=kanban_id).first()
-        # task = db_session.query(KanbanCard).filter_by(id=kanban_id)
+        
         if kanban:
+            # Obtém todas as tarefas associadas ao KanbanBoard
+            tasks = db_session.query(KanbanCard).filter_by(KanbanBoards_id=kanban.id).all()
+
+            # Exclui cada tarefa associada ao KanbanBoard
+            for task in tasks:
+                db_session.delete(task)
+
+            # Exclui o KanbanBoard
             db_session.delete(kanban)
-            db_session.commit() 
-            return jsonify({'message': 'KanbanBoard removido com sucesso!'})
+            db_session.commit()
+
+            return jsonify({'message': 'KanbanBoard e tarefas removidos com sucesso!'})
         else:
             return jsonify({'message': 'Nenhum KanbanBoard encontrado para remover.'})
     except Exception as e:
         return jsonify({'error': 'Erro ao remover o KanbanBoard.'}), 500
+
 
 
 # Função para remover uma tarefa
@@ -285,23 +296,24 @@ def adicionar_tarefa():
         title = data.get('title')
         description = data.get('description')
         status = data.get('status')
+        kanban_id = data.get('kanban_id')
         
         # Certifique-se de que o usuário autenticado é o dono do KanbanBoard
         user_email = session.get('user_email')
         user = db_session.query(User).filter_by(email=user_email).first()
         
         # Crie a nova tarefa vinculada ao Kanban do usuário
-        kanban = db_session.query(KanbanBoard).filter_by(user=user).first()
+        kanban = db_session.query(KanbanBoard).filter_by(user=user, id=kanban_id).first()
         if kanban:
             kanbancard = KanbanCard(title=title, description=description, status=status, KanbanBoards_id=kanban.id)
             db_session.add(kanbancard)
             db_session.commit()
             
             return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'KanbanBoard não encontrado para o usuário.'})
     
     return jsonify({'success': False})
-
-
 
 @app.route('/mover_tarefa/<int:cardId>/<newStatus>', methods=['PUT'])
 @login_required

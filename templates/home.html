@@ -374,10 +374,10 @@
       <ul class="nav-links">
         {% if "user_email" in session %}
           <li><a href="{{ url_for('interative') }}">Quadros</a></li>
-          <li><a href="{{ url_for('contato') }}">Contact Us</a></li>
+          <li><a href="{{ url_for('contato') }}">Team Develops</a></li>
           <li><a href="{{ url_for('logout') }}" class="login-button">Logout</a></li>
         {% else %}
-          <li><a href="{{ url_for('contato') }}">Contact Us</a></li>
+          <li><a href="{{ url_for('contato') }}">Team Develops</a></li>
           <li><a href="{{ url_for('login') }}" class="login-button">Login</a></li>
           <li><a href="{{ url_for('register') }}" class="login-button">register</a></li>
         {% endif %}
@@ -424,34 +424,6 @@
                   <span><i class="fab fa-instagram"></i></span>
                 </li>
               </ul>
-            </div>
-        </div>
-
-        <ul class="footer-list">
-            <li><h3>Blog</h3></li>
-            <li><a href="#" class="footer-link">Tech</a></li>
-            <li><a href="#" class="footer-link">Adventures</a></li>
-            <li><a href="#" class="footer-link">Music</a></li>
-        </ul>
-
-        <ul class="footer-list">
-            <li><h3>Products</h3></li>
-            <li><a href="#" class="footer-link">App</a></li>
-            <li><a href="#" class="footer-link">Desktop</a></li>
-            <li><a href="#" class="footer-link">Cloud</a></li>
-        </ul>
-
-        <div id="footer_subscribe">
-            <h3>Subscribe</h3>
-            <p>
-                Enter your e-mail to get notified about
-                our news solutions
-            </p>
-            <div id="input_group">
-                <input type="email" id="email">
-                <button>
-                    <i class="fa-regular fa-envelope"></i>
-                </button>
             </div>
         </div>
       </div>

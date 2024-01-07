@@ -12,4 +12,4 @@ class KanbanCard(Base):
     KanbanBoards_id = Column(Integer, ForeignKey('KanbanBoards.id'), nullable=True)
     kanbanboard = relationship("KanbanBoard", back_populates="tarefas")
 
-from .kanbanboard import KanbanBoard  # Mantenha essa importação
+

@@ -24,13 +24,6 @@
                         <a href="home"><span>Home</span></a>
                     </li>
 
-                    <li class="item">
-                        <a href="#"><span>Quadros</span></a>
-                    </li>
-
-                    <li class="item">
-                        <a href="contato"><span>Contato</span></a>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -78,9 +71,9 @@
                             <div class="board-card" id="{{ kanban.id }}" onclick="redirectToKanban('{{ kanban.id }}')">
                                 <h3 class="card-title">{{ kanban.name }}</h3>
                                 <p class="card-description">{{ kanban.description }}</p>
-                                <button class="board-button" data-kanban-id="{{ kanban.id }}" onclick="deletarkanban(this)">Deletar Quadro</button>
-                                <button class="board-button" data-kanban-id="{{ kanban.id }}" onclick="editCard(this)">editar Quadro</button>
                             </div>
+                            <button class="board-button" data-kanban-id="{{ kanban.id }}" onclick="editCard(this)">editar Quadro</button>
+                            <button class="board-button" data-kanban-id="{{ kanban.id }}" onclick="deletarkanban(this)">Deletar Quadro</button>
                             {% endfor %}
                         </div>
                     </div>

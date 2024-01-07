@@ -15,3 +15,4 @@ class User(Base):
 
     # Relacionamento com KanbanBoard
     kanbanboards = relationship("KanbanBoard", back_populates="user")
+

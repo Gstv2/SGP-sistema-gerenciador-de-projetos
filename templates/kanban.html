@@ -12,20 +12,109 @@
   <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
   <title>Tela Kanban</title>
   <document>kanban</document>
+  <style>
+    /* Estilo para a segunda barra lateral (sidebar-right) */
+    #sidebar-right {
+      width: 0;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #272934;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+      z-index: 1;
+    }
+    #sidebar-right .profile {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+    }
+
+    #sidebar-right .profile-icon {
+      font-size: 30px;
+      color: white;
+      margin-right: 10px;
+    }
+
+    #sidebar-right .profile-info {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #sidebar-right .profile-name,
+    #sidebar-right .profile-email {
+      margin-bottom: 5px;
+    }
+
+    #sidebar-right .material-icons {
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+    }
+
+    #sidebar-right .sidebar-icon {
+      font-size: 30px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      color: white;
+    }
+
+    #sidebar-right .sidebar-content {
+      padding: 20px;
+      color: white;
+    }
+
+    #sidebar-right ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #sidebar-right li a {
+      text-decoration: none;
+      color: white;
+    }
+
+    #sidebar-right li a:hover {
+      color: #ffeba7;
+    }
+
+  </style>
 </head>
 <body> <!-- Starting with dark theme by default -->
   <div class="header">
     <h1 class="header-title">{{ kanban.name }}</h1>
-    <div class="profile">
-      <div class="profile-icon"><i class="glyphicon glyphicon-user"></i></div>
-      <div class="profile-info">
-        <!-- Usar as propriedades do objeto 'user' para exibir as informações do usuário -->
-        <div class="profile-name"><a class="perfil" href="{{ url_for('perfil')}}" >{{ user.nome }}</a></div>
-        <div class="profile-email"><a class="perfil" href="{{ url_for('perfil')}}">{{ user.email }}</a></div>
+    <!-- Segunda barra lateral -->
+    <div class="sidebar-right" id="sidebar-right">
+      <div class="sidebar-icon" onclick="toggleRightSidebar()">
+        <i class="bi bi-layout-sidebar-inset"></i>
       </div>
-      <i class="material-icons"><a class="logout" href="logout">logout</a></i>
+      <hr width="100%" style="color:#ffeba7;">
+      <!-- Conteúdo da segunda barra lateral -->
+      <div class="profile">
+        <div class="profile-icon"><i class="glyphicon glyphicon-user"></i></div>
+        <div class="profile-info">
+          <!-- Usar as propriedades do objeto 'user' para exibir as informações do usuário -->
+          <div class="profile-name"><a class="perfil" href="{{ url_for('perfil')}}" >{{ user.nome }}</a></div>
+          <div class="profile-email"><a class="perfil" href="{{ url_for('perfil')}}">{{ user.email }}</a></div>
+        </div>
+      </div>
+      <hr width="100%" style="color:#ffeba7;">
+      <div class="material-icons" onclick="logout()">logout</div>
+    </div>
+
+    <div class="profile">
+      <a class="perfil" href="javascript:void(0);" onclick="toggleRightSidebar()">
+        <div class="profile-icon"><i class="glyphicon glyphicon-user"></i></div>
+      </a>
     </div>
   </div>
+
+
 
   <div class="sidebar" id="sidebar">
     <div class="sidebar-icon" onclick="toggleSidebar()">
@@ -43,16 +132,28 @@
 
   <div class="board">
     <!-- Coluna Backlog -->
-    <div class="column" ondragover="allowDrop(event)" ondrop="dropCard(event)">
+    <div class="column" ondragover="allowDrop(event)" ondrop="dropCard(event)" data-kanban-id="{{ kanban.id }}">
       <div class="column-header">backlog</div>
       <!-- Loop pelas tarefas do Backlog -->
       {% for kanbancard in backlog_tasks %}
-      <div class="card" id="{{ kanbancard.id }}" draggable="true" ondragstart="dragCard(event)">
-        <div class="card-title">{{ kanbancard.title }}</div>
-        <div class="card-description">{{ kanbancard.description }}</div>
-        <button class="card-button" onclick="removerTarefa(this)", data-task-id="{{ kanbancard.id }}">remover</button>
-        <button class="card-button_edit" onclick="editCard(this)" data-task-id="{{ kanbancard.id }}"><i class="material-icons" style="font-size: 13px;">edit</i></button>
-      </div>
+        <div class="card" id="{{ kanbancard.id }}" draggable="true" ondragstart="dragCard(event)">
+          <div class="card-title">{{ kanbancard.title }}</div>
+          <div class="card-description">{{ kanbancard.description }}</div>
+          
+          <!-- Adicione a opção de escolher o membro responsável -->
+          <div class="card-member-selection">
+            <label for="memberSelect{{ kanbancard.id }}">Membro:</label>
+            <select id="memberSelect{{ kanbancard.id }}">
+              <!-- Aqui você deve iterar sobre os membros disponíveis -->
+              {% for member in members %}
+                <option value="{{ member.email }}">{{ member.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+      
+          <button class="card-button" onclick="removerTarefa(this)" data-task-id="{{ kanbancard.id }}">remover</button>
+          <button class="card-button_edit" onclick="editCard(this)" data-task-id="{{ kanbancard.id }}"><i class="material-icons" style="font-size: 13px;">edit</i></button>
+        </div>
       {% endfor %}
       <button class="card-button-adicionar" onclick="adicionarTarefa(this.parentNode)">Adicionar Nova Tarefa</button>
     </div>
@@ -105,6 +206,24 @@
 
 </body>
 <script>
+
+
+  function toggleRightSidebar() {
+    var sidebarRight = document.getElementById('sidebar-right');
+    var sidebarRightIcon = document.querySelector('#sidebar-right .sidebar-icon');
+    var profileInfo = document.querySelector('#sidebar-right .profile-info');
+
+    if (sidebarRight.style.width === '200px') {
+      sidebarRight.style.width = '0';
+      sidebarRightIcon.innerHTML = '<i class="bi bi-layout-sidebar-inset"></i>';
+      profileInfo.style.display = 'none'; // Oculta as informações do perfil
+    } else {
+      sidebarRight.style.width = '200px';
+      sidebarRightIcon.innerHTML = '<i class="bi bi-layout-sidebar-inset-reverse"></i>';
+      profileInfo.style.display = 'flex'; // Exibe as informações do perfil quando a barra está expandida
+    }
+  }
+
   // Função para alternar a barra lateral
   function toggleSidebar() {
     var sidebar = document.getElementById('sidebar');
@@ -180,12 +299,15 @@
   }
   function editCard(button) {
     // Obtém o ID da tarefa associado ao botão clicado
-    let cardId = button.getAttribute('data-task-id');
+    let task_id = button.getAttribute('data-task-id');
 
     // Obtém os dados atuais da tarefa (título e descrição) do cartão
-    let card = document.getElementById(cardId);
-    let currentTitle = card.querySelector('.card-title').textContent;
-    let currentDescription = card.querySelector('.card-description').textContent;
+    let kanbanCard = document.getElementById(task_id);
+    let currentTitle = kanbanCard.querySelector('.card-title').textContent;
+    let currentDescription = kanbanCard.querySelector('.card-description').textContent;
+
+    // Obtém a escolha do membro
+    let selectedMember = document.getElementById(`memberSelect${task_id}`).value;
 
     // Pede ao usuário que insira os novos valores para o título e descrição
     let newTitle = prompt("Digite o novo título da tarefa:", currentTitle);
@@ -194,18 +316,22 @@
     // Verifica se o usuário inseriu novos valores e se o botão Cancelar não foi pressionado
     if (newTitle !== null && newDescription !== null) {
       // Atualiza os dados no cartão
-      card.querySelector('.card-title').textContent = newTitle;
-      card.querySelector('.card-description').textContent = newDescription;
+      kanbanCard.querySelector('.card-title').textContent = newTitle;
+      kanbanCard.querySelector('.card-description').textContent = newDescription;
+
+      // Adiciona ou atualiza o membro responsável no cartão
+      kanbanCard.dataset.responsibleMember = selectedMember;
 
       // Faça uma solicitação AJAX para atualizar os dados no servidor
-      fetch(`/edit_task/${cardId}`, {
+      fetch(`/edit_tarefa/${task_id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           newTitle: newTitle,
-          newDescription: newDescription
+          newDescription: newDescription,
+          responsibleMember: selectedMember
         })
       })
       .then(response => response.json())
@@ -220,17 +346,17 @@
       });
     }
   }
-
   
   // Função para adicionar uma nova tarefa a uma coluna
   function adicionarTarefa(column) {
+    let kanbanId = column.getAttribute('data-kanban-id');
     let cardTitle = prompt("Digite o título da tarefa:");
     let cardDescription = prompt("Digite a descrição da tarefa:");
 
     if (cardTitle && cardDescription) {
       // Crie uma nova tarefa no front-end
       let cardId = Date.now();
-      let card = criarCard(cardId, cardTitle, cardDescription);
+      let card = criarCard(cardId, cardTitle, cardDescription, kanbanId);
       
       // Adicione a nova tarefa ao banco de dados
       fetch('/adicionar_tarefa', {
@@ -241,7 +367,8 @@
         body: JSON.stringify({
           title: cardTitle,
           description: cardDescription,
-          status: column.querySelector('.column-header').textContent
+          status: column.querySelector('.column-header').textContent,
+          kanban_id: kanbanId
         })
       })
       .then(response => response.json())
