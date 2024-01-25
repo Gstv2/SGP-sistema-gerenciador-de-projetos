@@ -13,3 +13,4 @@ class KanbanBoard(Base):
     # Relacionamento com User e KanbanCard
     user = relationship("User", back_populates="kanbanboards")
     tarefas = relationship("KanbanCard", back_populates="kanbanboard")
+    backlogs = relationship("Backlog", back_populates="kanbanboard")

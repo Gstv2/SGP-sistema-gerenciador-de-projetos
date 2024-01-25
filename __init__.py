@@ -150,116 +150,6 @@ def interative():
             db_session.rollback()
             return "Erro: " + str(e)
 
-
-# Rota para o Kanban
-@app.route("/kanban<int:kanban_id>")
-@login_required
-def kanban(kanban_id):
-    if check_tables_exist(engine):
-        return "Falha na criação das tabelas!"
-    else:
-        user_email = session['user_email']
-        # Abra uma nova sessão para esta visualização
-        db_session = Session()
-        
-        try:
-            user = db_session.query(User).filter_by(email=user_email).first()
-            kanban = db_session.query(KanbanBoard).filter_by(user=user, id=kanban_id).first()
-
-            backlog_tasks = db_session.query(KanbanCard).filter_by(status="backlog", KanbanBoards_id=kanban.id).all()
-            a_fazer_tasks = db_session.query(KanbanCard).filter_by(status="a fazer", KanbanBoards_id=kanban.id).all()
-            em_andamento_tasks = db_session.query(KanbanCard).filter_by(status="em andamento", KanbanBoards_id=kanban.id).all()
-            concluido_tasks = db_session.query(KanbanCard).filter_by(status="concluido", KanbanBoards_id=kanban.id).all()
-            
-
-            return render_template("kanban.html", user=user, kanban=kanban, em_andamento_tasks=em_andamento_tasks, backlog_tasks=backlog_tasks, a_fazer_tasks=a_fazer_tasks, concluido_tasks=concluido_tasks)
-        except Exception as e:
-            # Lide com exceções, se necessário
-            db_session.rollback()
-            return "Erro: " + str(e)
-
-
-
-# Rota para a página do backlog
-@app.route('/backlog<int:kanban_id>')
-@login_required
-def backlog(kanban_id):
-    if check_tables_exist(engine):
-        return "Falha na criação das tabelas!"
-    else:
-        user_email = session['user_email']
-        user = db_session.query(User).filter_by(email=user_email).first()
-        return render_template("backlog.html", user=user, kanban_id=kanban_id)
-
-@app.route('/perfil')
-@login_required
-def perfil():
-    if check_tables_exist(engine):
-        return "Falha na criação das tabelas!"
-    else:
-        # Buscar o usuário autenticado usando o email armazenado na sessão
-        user_email = session['user_email']
-        user = db_session.query(User).filter_by(email=user_email).first()
-        return render_template("perfil.html", user=user)
-
-
-# Rota para a página de membros
-@app.route('/member<int:kanban_id>')
-@login_required
-def member(kanban_id):
-    if check_tables_exist(engine):
-        return "Falha na criação das tabelas!"
-    else:
-        user_email = session['user_email']
-        user = db_session.query(User).filter_by(email=user_email).first()
-        return render_template("member.html", user=user, kanban_id=kanban_id)
-    
-
-
-# Função para remover o KanbanBoard existente
-@app.route('/remover_kanban/<int:kanban_id>', methods=['DELETE'])
-@login_required
-def remover_kanban(kanban_id):
-    try:
-        # Remova o KanbanBoard existente, se houver
-        kanban = db_session.query(KanbanBoard).filter_by(id=kanban_id).first()
-        
-        if kanban:
-            # Obtém todas as tarefas associadas ao KanbanBoard
-            tasks = db_session.query(KanbanCard).filter_by(KanbanBoards_id=kanban.id).all()
-
-            # Exclui cada tarefa associada ao KanbanBoard
-            for task in tasks:
-                db_session.delete(task)
-
-            # Exclui o KanbanBoard
-            db_session.delete(kanban)
-            db_session.commit()
-
-            return jsonify({'message': 'KanbanBoard e tarefas removidos com sucesso!'})
-        else:
-            return jsonify({'message': 'Nenhum KanbanBoard encontrado para remover.'})
-    except Exception as e:
-        return jsonify({'error': 'Erro ao remover o KanbanBoard.'}), 500
-
-
-
-# Função para remover uma tarefa
-@app.route('/remover_tarefa/<int:task_id>', methods=['DELETE'])
-@login_required
-def remover_tarefa(task_id):
-    try:
-        kanbancard = db_session.query(KanbanCard).filter_by(id=task_id).first()
-        if kanbancard:
-            db_session.delete(kanbancard)
-            db_session.commit()
-            return jsonify({'message': 'Tarefa removida com sucesso!'})
-        else:
-            return jsonify({'error': 'Tarefa não encontrada.'}), 404
-    except Exception as e:
-        return jsonify({'error': 'Erro ao remover a tarefa.'}), 500
-    
-
 # Função para adicionar um novo KanbanBoard
 @app.route('/adicionar_kanban', methods=['POST'])
 @login_required
@@ -288,7 +178,111 @@ def adicionar_kanban():
         return jsonify({'error': 'Erro ao adicionar o KanbanBoard.'}), 500
     
 
+@app.route('/edit_kanban/<int:kanban_id>', methods=['PUT'])
+@login_required
+def edit_kanban(kanban_id):
+    try:
+        data = request.get_json()
+        if data:
+            newname = data.get('newname')
+            newDescription = data.get('newDescription')
 
+            # Busque o quadro do Kanban pelo ID
+            kanban = db_session.query(KanbanBoard).filter_by(id=kanban_id).first()
+
+            if kanban:
+                # Atualize os dados do quadro com os novos valores
+                kanban.name = newname
+                kanban.description = newDescription
+
+                # Commit as mudanças no banco de dados
+
+                db_session.commit()
+
+                return jsonify({'message': 'Quadro atualizado com sucesso!'})
+            else:
+                return jsonify({'message': 'Quadro não encontrado.'}), 404
+    except Exception as e:
+        # Lide com exceções, se necessário
+        db_session.rollback()
+        return jsonify({'message': 'Erro ao atualizar o quadro: ' + str(e)}), 500
+
+
+@app.route('/remover_kanban/<int:kanban_id>', methods=['DELETE'])
+@login_required
+def remover_kanban(kanban_id):
+    try:
+        # Busque o KanbanBoard pelo ID
+        kanban = db_session.query(KanbanBoard).filter_by(id=kanban_id).first()
+        
+        if kanban:
+            tasks = db_session.query(KanbanCard).filter_by(KanbanBoards_id=kanban_id).all()
+
+            # Exclui cada tarefa associada ao KanbanBoard
+            for task in tasks:
+                db_session.delete(task)
+
+            # Exclui todas as tarefas no backlog
+            backlog_tasks = db_session.query(Backlog).filter_by(kanbanboard_id=kanban_id).all()
+
+            for backlog_task in backlog_tasks:
+                db_session.delete(backlog_task)
+            # Remova o KanbanBoard
+            db_session.delete(kanban)
+            db_session.commit()
+            return jsonify({'success': True, 'message': 'KanbanBoard removido com sucesso!'})
+        else:
+            return jsonify({'success': False, 'message': 'Nenhum KanbanBoard encontrado para remover.'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Erro ao remover o KanbanBoard: {str(e)}'}), 500
+
+
+
+# Rota para o Kanban
+@app.route("/kanban<int:kanban_id>")
+@login_required
+def kanban(kanban_id):
+    if check_tables_exist(engine):
+        return "Falha na criação das tabelas!"
+    else:
+        user_email = session['user_email']
+        # Abra uma nova sessão para esta visualização
+        db_session = Session()
+        
+        try:
+            user = db_session.query(User).filter_by(email=user_email).first()
+            kanban = db_session.query(KanbanBoard).filter_by(user=user, id=kanban_id).first()
+
+            backlog_tasks = db_session.query(KanbanCard).filter_by(status="backlog", KanbanBoards_id=kanban.id).all()
+            a_fazer_tasks = db_session.query(KanbanCard).filter_by(status="a fazer", KanbanBoards_id=kanban.id).all()
+            em_andamento_tasks = db_session.query(KanbanCard).filter_by(status="em andamento", KanbanBoards_id=kanban.id).all()
+            concluido_tasks = db_session.query(KanbanCard).filter_by(status="concluido", KanbanBoards_id=kanban.id).all()
+            
+
+            return render_template("kanban.html", user=user, kanban=kanban, em_andamento_tasks=em_andamento_tasks, backlog_tasks=backlog_tasks, a_fazer_tasks=a_fazer_tasks, concluido_tasks=concluido_tasks)
+        except Exception as e:
+            # Lide com exceções, se necessário
+            db_session.rollback()
+            return "Erro: " + str(e)
+        
+        
+# Função para remover uma tarefa
+@app.route('/remover_tarefa/<int:task_id>', methods=['DELETE'])
+@login_required
+def remover_tarefa(task_id):
+    try:
+        kanbancard = db_session.query(KanbanCard).filter_by(id=task_id).first()
+        if kanbancard:
+            db_session.delete(kanbancard)
+            db_session.commit()
+            return jsonify({'message': 'Tarefa removida com sucesso!'})
+        else:
+            return jsonify({'error': 'Tarefa não encontrada.'}), 404
+    except Exception as e:
+        return jsonify({'error': 'Erro ao remover a tarefa.'}), 500
+    
+
+    
 @app.route('/adicionar_tarefa', methods=['POST'])
 def adicionar_tarefa():
     data = request.get_json()
@@ -334,35 +328,6 @@ def mover_tarefa(cardId, newStatus):
     except Exception as e:
         return jsonify({'error': 'Erro ao mover a tarefa.'}), 500
 
-
-
-@app.route('/edit_kanban/<int:kanban_id>', methods=['PUT'])
-@login_required
-def edit_kanban(kanban_id):
-    try:
-        data = request.get_json()
-        if data:
-            newname = data.get('newname')
-            newDescription = data.get('newDescription')
-
-            # Busque o quadro do Kanban pelo ID
-            kanban = db_session.query(KanbanBoard).filter_by(id=kanban_id).first()
-
-            if kanban:
-                # Atualize os dados do quadro com os novos valores
-                kanban.name = newname
-                kanban.description = newDescription
-
-                # Commit as mudanças no banco de dados
-                db_session.commit()
-
-                return jsonify({'message': 'Quadro atualizado com sucesso!'})
-            else:
-                return jsonify({'message': 'Quadro não encontrado.'}), 404
-    except Exception as e:
-        # Lide com exceções, se necessário
-        db_session.rollback()
-        return jsonify({'message': 'Erro ao atualizar o quadro: ' + str(e)}), 500
     
 # Defina uma rota para editar uma tarefa existente
 @app.route('/edit_task/<int:cardId>', methods=['PUT'])
@@ -387,6 +352,78 @@ def edit_task(cardId):
                 return jsonify({'error': 'Tarefa não encontrada.'}), 404
     except Exception as e:
         return jsonify({'error': 'Erro ao alterar a tarefa.'}), 500
+
+
+# Rota para a página do backlog
+@app.route('/backlog<int:kanban_id>')
+@login_required
+def backlog(kanban_id):
+    if check_tables_exist(engine):
+        return "Falha na criação das tabelas!"
+    else:
+        user_email = session['user_email']
+        user = db_session.query(User).filter_by(email=user_email).first()
+        kanban = db_session.query(KanbanBoard).filter_by(user=user, id=kanban_id).first()
+
+        # Obtenha as tarefas do backlog
+        backlog_tasks = db_session.query(Backlog).filter_by(kanbanboard_id=kanban_id).all()
+
+        return render_template("backlog.html", user=user, kanban_id=kanban_id, kanban=kanban, backlog_tasks=backlog_tasks)
+
+    
+# Rota para adicionar uma tarefa ao backlog
+@app.route('/adicionar_tarefa_backlog/<int:kanban_id>', methods=['POST'])
+@login_required
+def adicionar_tarefa_backlog(kanban_id):
+    data = request.get_json()
+    if data:
+        backlog_title = data.get('title')
+        backlog_description = data.get('description')
+        backlog_date = data.get('date')
+
+        try:
+            # Certifique-se de que o usuário autenticado é o dono do KanbanBoard
+            user_email = session.get('user_email')
+            user = db_session.query(User).filter_by(email=user_email).first()
+
+            if user:
+                # Adicionar tarefa ao backlog no banco de dados
+                backlog_task = Backlog(title=backlog_title, description=backlog_description, date=backlog_date, user=user, kanbanboard_id=kanban_id)
+                db_session.add(backlog_task)
+                db_session.commit()
+                # Obtenha a ID da tarefa após a adição
+                task_id = backlog_task.id
+                # Feche a sessão após obter os resultados
+                db_session.close()
+                return jsonify({'success': True, 'message': 'Tarefa adicionada com sucesso.', 'task_id': task_id})
+            else:
+                return jsonify({'error': 'Usuário não encontrado.'}), 404
+        except Exception as e:
+            return jsonify({'error': 'Erro ao adicionar a tarefa ao backlog.'}), 500
+    else:
+        return jsonify({'error': 'Dados inválidos.'}), 400
+
+
+
+
+# Rota para remover uma tarefa do backlog
+@app.route('/remover_tarefa_backlog/<int:task_id>', methods=['DELETE'])
+@login_required
+def remover_tarefa_backlog(task_id):
+    try:
+        # Busque o KanbanBoard pelo ID
+        print(task_id)
+        task_backlog = db_session.query(Backlog).filter_by(id=task_id).first()
+        if task_backlog:
+            # Remova o KanbanBoard
+            db_session.delete(task_backlog)
+            db_session.commit()
+            return jsonify({'success': True, 'message': 'tarefa do backlog removido com sucesso!'})
+        else:
+            return jsonify({'success': False, 'message': 'Nenhuma tarefa do backlog encontrado para remover.'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'Erro ao remover a tarefa do backlog: {str(e)}'}), 500
+
 
 
 if __name__ == '__main__':

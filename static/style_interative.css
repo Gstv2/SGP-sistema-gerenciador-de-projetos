@@ -39,6 +39,14 @@ h2 {
     margin-left: 20px;
     font-family: sans-serif;
 }
+.boards-section h2 {
+    color: #c5760e;
+    font-size: 26px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-left: 0px;
+    font-family: sans-serif;
+}
 
 .task-manager {
     display: flex;

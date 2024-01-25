@@ -9,23 +9,111 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style_backlog.css') }}">
   <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png">
+  <style>
+    #sidebar-right {
+      width: 0;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      right: 0;
+      background-color: #272934;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+      z-index: 1;
+    }
 
+    #sidebar-right .profile {
+      display: flex;
+      align-items: center;
+      padding: 20px 0;
+    }
+
+    #sidebar-right .profile-icon {
+      font-size: 20px;
+      color: white;
+      margin-right: 10px;
+    }
+
+    #sidebar-right .profile-info {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-right: 10px;
+    }
+
+    .text_name,
+    .text_email {
+      font-size: 10px;
+      font-weight: 600;
+      margin: 5px;
+    }
+
+    #sidebar-right .material-icons {
+      padding: 40px 0;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+    }
+
+    #sidebar-right .sidebar-icon {
+      font-size: 30px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      color: white;
+    }
+
+    #sidebar-right .sidebar-content {
+      padding: 20px;
+      color: white;
+    }
+
+    #sidebar-right ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #sidebar-right li a {
+      text-decoration: none;
+      color: white;
+    }
+
+    #sidebar-right li a:hover {
+      color: #ffeba7;
+    }
+
+  </style>
 </head>
 <body>
   <div class="header">
     <h1 class="header-title">Product Backlog</h1>
-
-    <div class="profile">
-      <div class="profile-icon"><i class="glyphicon glyphicon-user"></i></div>
-      <div class="profile-info">
-        <!-- Usar as propriedades do objeto 'user' para exibir as informações do usuário -->
-      <div class="profile-name"><a class="perfil" href="perfil">{{ user.nome }}</a></div>
-      <div class="profile-email"><a class="perfil" href="perfil">{{ user.email }}</a></div>
+      <!-- Segunda barra lateral -->
+      <div class="sidebar-right" id="sidebar-right">
+        <div class="sidebar-icon" onclick="toggleRightSidebar()">
+          <i class="bi bi-layout-sidebar-inset"></i>
+        </div>
+        <hr width="100%" style="color:#ffeba7;">
+        <!-- Conteúdo da segunda barra lateral -->
+        <div class="profile">
+  
+          <div class="profile-info" style="display: none;">
+            <!-- Usar as propriedades do objeto 'user' para exibir as informações do usuário -->
+            <div class="text_name">nome: {{ user.nome }}</div>
+            <div class="text_email">email: {{ user.email }}</div>
+          </div>
+        </div>
+        <div class="material-icons"><i class="material-icons"><a class="logout" href="logout">logout</a></i></div>
       </div>
-      <i class="material-icons"><a class="logout" href="logout">logout</a></i>
+  
+      <div class="profile">
+        <a class="perfil" href="javascript:void(0);" onclick="toggleRightSidebar()">
+          <div class="profile-icon" style="margin-top: 10px;"><i class="glyphicon glyphicon-user"></i></div>
+        </a>
+      </div>
     </div>
-  </div>
-  </div>
 
   <div class="sidebar" id="sidebar">
     <div class="sidebar-icon" onclick="toggleSidebar()">
@@ -35,7 +123,6 @@
     <ul>
       <li><a href="{{ url_for('home') }}"><i class="bi bi-house-door"></i><span class="text">Home</span></a></li>
       <li><a href="{{ url_for('kanban', kanban_id=kanban_id) }}"><i class="bi bi-columns-gap"></i><span class="text">Kanban</span></a></li>
-      <li><a href="{{ url_for('member', kanban_id=kanban_id) }}"><i class="bi bi-people"></i><span class="text">Membros</span></a></li>
       <li><a href="{{ url_for('interative') }}"><i class="bi bi-kanban"></i><span class="text">Quadros</span></a></li>
     </ul>
   </div>
@@ -50,20 +137,51 @@
           <th>Título</th>
           <th>Descrição</th>
           <th>Data</th>
+          <th>Ações</th>
         </tr>
       </thead>
-      <tbody id="backlogTableBody"></tbody>
+      <tbody id="backlogTableBody">
+        {% for backlog in backlog_tasks %}
+          <tr data-task-id="{{ backlog.id }}">
+            <td>{{ backlog.title }}</td>
+            <td>{{ backlog.description }}</td>
+            <td>{{ backlog.date }}</td>
+            <td>
+              <button class="card-button" onclick="removerTarefaBacklog(this)">Remover</button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
     </table>
-    <div class="backlog-actions">
+    <div class="backlog-actions" data-kanban-id="{{ kanban.id }}">
       <input type="text" id="backlogTitle" placeholder="Título">
       <input type="text" id="backlogDescription" placeholder="Descrição">
       <input type="date" id="backlogDate" placeholder="Data">
       <input type="button" value="Adicionar" onclick="adicionarTarefaBacklog()">
     </div>
   </div>
-    
+  
 </body>
 <script>
+
+  
+  function toggleRightSidebar() {
+    var sidebarRight = document.getElementById('sidebar-right');
+    var sidebarRightIcon = document.querySelector('#sidebar-right .sidebar-icon');
+    var profileInfo = document.querySelector('#sidebar-right .profile-info');
+
+    if (sidebarRight.style.width === '200px') {
+      // Barra lateral expandida
+      sidebarRight.style.width = '0';
+      sidebarRightIcon.innerHTML = '<i class="bi bi-layout-sidebar-inset"></i>'; // Ícone para expandir a barra
+      profileInfo.style.display = 'none'; // Oculta as informações do perfil
+    } else {
+      // Barra lateral contraída
+      sidebarRight.style.width = '200px';
+      sidebarRightIcon.innerHTML = '<i class="bi bi-layout-sidebar-inset-reverse"></i>'; // Ícone para contrair a barra
+      profileInfo.style.display = 'flex'; // Exibe as informações do perfil quando a barra está expandida
+    }
+  }   
   // Função para alternar a barra lateral
   function toggleSidebar() {
     var sidebar = document.getElementById('sidebar');
@@ -106,52 +224,85 @@
   let backlogTableBody = document.getElementById('backlogTableBody');
 
   function adicionarTarefaBacklog() {
+    let kanbanId = document.querySelector('.backlog-actions').getAttribute('data-kanban-id');
     let backlogTitle = document.getElementById('backlogTitle').value;
     let backlogDate = document.getElementById('backlogDate').value;
     let backlogDescription = document.getElementById('backlogDescription').value;
 
     if (backlogTitle && backlogDescription && backlogDate) {
-      let row = document.createElement('tr');
+      // Enviar os dados para o servidor Flask
+      fetch(`/adicionar_tarefa_backlog/${kanbanId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: backlogTitle,
+          description: backlogDescription,
+          date: backlogDate,
+          kanban_id: kanbanId
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Adicionar a tarefa à tabela na interface
+          let row = document.createElement('tr');
 
-      let titleCell = document.createElement('td');
-      titleCell.textContent = backlogTitle;
+          let titleCell = document.createElement('td');
+          titleCell.textContent = backlogTitle;
 
-      let descriptionCell = document.createElement('td');
-      descriptionCell.textContent = backlogDescription;
+          let descriptionCell = document.createElement('td');
+          descriptionCell.textContent = backlogDescription;
 
-      let dateCell = document.createElement('td');
-      dateCell.textContent = backlogDate;
+          let dateCell = document.createElement('td');
+          dateCell.textContent = backlogDate;
 
-      let actionsCell = document.createElement('td');
-      let removeButton = document.createElement('button');
-      removeButton.textContent = 'Remover';
-      removeButton.className = 'card-button';
-      removeButton.onclick = function () {
-        removerTarefaBacklog(this);
-      };
-      actionsCell.appendChild(removeButton);
+          let actionsCell = document.createElement('td');
+          let removeButton = document.createElement('button');
+          removeButton.textContent = 'Remover';
+          removeButton.className = 'card-button';
+          removeButton.onclick = function () {
+            removerTarefaBacklog(this);
+          };
+          actionsCell.appendChild(removeButton);
 
-      row.appendChild(titleCell);
-      row.appendChild(descriptionCell);
-      row.appendChild(dateCell);
-      row.appendChild(actionsCell);
+          row.appendChild(titleCell);
+          row.appendChild(descriptionCell);
+          row.appendChild(dateCell);
+          row.appendChild(actionsCell);
 
-      backlogTableBody.appendChild(row);
+          backlogTableBody.appendChild(row);
 
-      document.getElementById('backlogTitle').value = '';
-      document.getElementById('backlogDescription').value = '';
-      document.getElementById('backlogDate').value = '';
+          // Limpar os campos de entrada após a adição
+          document.getElementById('backlogTitle').value = '';
+          document.getElementById('backlogDescription').value = '';
+          document.getElementById('backlogDate').value = '';
+          location.reload();
+        } else {
+          alert("Erro ao adicionar a tarefa.");
+        }
+      });
     }
   }
 
   function removerTarefaBacklog(button) {
     let row = button.parentNode.parentNode;
-    row.parentNode.removeChild(row);
-  }
+    let taskId = row.getAttribute('data-task-id');
 
-  function logout() {
-    alert("Logout realizado com sucesso!");
+    // Remover a tarefa do banco de dados via Flask
+    fetch(`/remover_tarefa_backlog/${taskId}`, {
+      method: 'DELETE'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Remover a linha da tabela na interface
+        row.parentNode.removeChild(row);
+      } else {
+        alert("Erro ao remover a tarefa.");
+      }
+    });
   }
-
 </script>
 </html>
